@@ -193,6 +193,7 @@ class preprocess(base):
         text = re.sub(r'bbo', 'bobo', text)
         text = re.sub(r'tnga', 'tanga', text)
         text = re.sub(r'pnget', 'panget', text)
+        text = re.sub(r'thanks', 'thank', text)
 
         return text
 
@@ -231,6 +232,9 @@ class eda:
         self.wordcloud = WordCloud(width=1200, height=800, max_words=500, background_color="white", scale=2)
         self.all_bigrams = []
         self.all_text = ' '.join(self.df[self.text_column_name])
+        self.background_color = '#adadadff'
+        self.text_color = '#000000'
+        self.bar_color = '#121166'
 
     def descriptions(self):
         print('shape:\n', self.df.shape, '\n')
@@ -263,12 +267,12 @@ class eda:
         top_10_words = word_counts.head(top)
 
         # Set the color specifications
-        background_color = '#27374D'
-        text_color = '#A5D7E8'
-        bar_color = '#1C82AD'
+        background_color = self.background_color
+        text_color = self.text_color
+        bar_color = self.bar_color
 
         # Create the bar chart
-        fig, ax = plt.subplots(figsize=(8, 6), facecolor=background_color)
+        fig, ax = plt.subplots(figsize=(11, 7), facecolor=background_color)
         ax.barh(top_10_words.index, top_10_words.values, color=bar_color)
 
         # Set the background and text colors
@@ -314,12 +318,12 @@ class eda:
         bigram_frequencies = list(bigram_frequencies)
 
         # Set the color specifications
-        background_color = '#27374D'
-        text_color = '#A5D7E8'
-        bar_color = '#1C82AD'
+        background_color = self.background_color
+        text_color = self.text_color
+        bar_color = self.bar_color
 
         # Create the bar chart
-        fig, ax = plt.subplots(figsize=(8, 6), facecolor=background_color)
+        fig, ax = plt.subplots(figsize=(10, 8), facecolor=background_color)
         ax.barh(bigram_phrases, bigram_frequencies, color=bar_color)
 
         # Set the background and text colors
@@ -369,11 +373,11 @@ class eda:
             self.wordcloud.generate(joined_comments)
 
         # Set the background color
-        background_color = '#27374D'
+        background_color = self.background_color
         self.wordcloud.background_color = background_color
 
         # Set the colors of the words
-        word_colors = ['#F2CA19', '#FF00BD', '#87E911', '#F3D568']
+        word_colors = ['#b31212ff', '#121cb3ff', '#a51064ff', '#14630dff']
         self.wordcloud.recolor(color_func=lambda *args, **kwargs: random.choice(word_colors))
 
         self.wordcloud.to_file('{}_wordcloud.png'.format(filename))
@@ -388,7 +392,7 @@ class eda:
         counts = value_counts.values
 
         colors = ['#001C30', '#176B87', '#64CCC5']
-        background_color = '#27374D'
+        background_color = self.background_color
 
         # Map the index values to the desired labels
         sentiment_labels = labels.map({0.0: 'negative', 1.0: 'neutral', 2.0: 'positive'})
@@ -404,9 +408,9 @@ class eda:
         
     def bar_sentiment(self, filename: str, column_name: str):
         # Set the color specifications
-        background_color = '#27374D'
-        text_color = '#A5D7E8'
-        bar_color = '#1C82AD'
+        background_color = self.background_color
+        text_color = self.text_color
+        bar_color = self.bar_color
 
         # Set the background color
         plt.figure(facecolor=background_color)
@@ -708,7 +712,7 @@ class models:
         joblib.dump(self.model, 'svm_model_{}.pkl'.format(self.filename))
         
         # Save the vectors
-        self.xtrain.to_csv('{}.csv'.format(self.filename))
+        self.xtrain.to_csv('{}_{}.csv'.format(self.model_name, self.filename))
         
         # Save the label encoder
         joblib.dump(self.label_encoder, 'svm_label_encoder_{}.pkl'.format(self.filename))
@@ -749,7 +753,7 @@ class models:
         joblib.dump(self.model, 'dectree_model_{}.pkl'.format(self.filename))
         
         # Save the vectors
-        self.xtrain.to_csv('{}.csv'.format(self.filename))
+        self.xtrain.to_csv('{}_{}.csv'.format(self.model_name, self.filename))
         
         # Save the label encoder
         joblib.dump(self.label_encoder, 'dectree_label_encoder_{}.pkl'.format(self.filename))
@@ -784,11 +788,13 @@ class models:
         # Train the best Random Forest model on the entire training data
         best_rf_model.fit(self.xtrain_vectors, self.ytrain)
         
+        self.model = best_rf_model
+        
         # Save the model to a file
         joblib.dump(self.model, 'random_forest_model_{}.pkl'.format(self.filename))
         
         # Save the vectors
-        self.xtrain.to_csv('{}.csv'.format(self.filename))
+        self.xtrain.to_csv('{}_{}.csv'.format(self.model_name, self.filename))
         
         # Save the label encoder
         joblib.dump(self.label_encoder, 'random_forest_label_encoder_{}.pkl'.format(self.filename))

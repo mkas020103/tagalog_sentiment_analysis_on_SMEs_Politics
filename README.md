@@ -2,7 +2,7 @@
 This repository aims to create different sentiment classification models and visualizations related to topics like politics. 
 
 # Models
-This repository contains the models with their respective label encoders and training data.
+This repository contains the models with their respective label encoders and training data including the confusion matrix of each model.
 
 # Notebooks
 This repository contains all of the versions of the notebooks that were used to train and evaluate the models and are also used for the visualization of the data. Each notebook is used to call classes and functions from the "scripts" repository. 
